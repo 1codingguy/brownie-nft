@@ -21,3 +21,16 @@
   Don't really know what they are now
 
 # enum statement does not require a `;` at the end of line
+
+# create something truly random = create real scarcity
+
+# what is a token URI
+https://eips.ethereum.org/EIPS/eip-721
+- A distinct Uniform Resource Identifier (URI) for a given asset.
+- The URI may point to a JSON file that conforms to the "ERC721 Metadata JSON Schema".
+  - can be an API call
+  - can be an IPFS link
+    - that points to a specific json file that contains the metadata, like a link to IPFS asset
+  - IPFS is basically a network in a decentralized manner
+
+# ganache-cli is to run test locally before deploying the smart contract onto blockchain

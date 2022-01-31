@@ -21,49 +21,70 @@ contract AdvancedCollectible is ERC721, VRFConsumerBase {
   event requestCollectible(bytes32 indexed requestId);
 
   constructor(
-    address _VRFCoordinator,
+    address _VRFCoordinator, // prove it's a random number
     address _LinkToken,
-    bytes32 _keyhash
+    bytes32 _keyhash // along with VRFCoordinator, to prove a random number is actually random
   )
     public
+    // lines below add the constructors of VRFConsumerBase and ERC721
     VRFConsumerBase(_VRFCoordinator, _LinkToken)
-    ERC721('Doggies', 'DOG')
+    ERC721('Doggies', 'DOG') //name, symbol
   {
     keyHash = _keyhash;
     fee = 0.1 * 10**18; // 0.1 LINK
     tokenCounter = 0;
   }
 
+  // a function create collectibles for us,
+  // that kicks off a request to the chainlink VRF
+  // that returns a random number, to create us an NFT
   function createCollectible(uint256 userProvidedSeed, string memory tokenURI)
     public
     returns (bytes32)
   {
+    // kick off randomness request to Chainlink VRF, request is async
+    // get a random node from the offchain chainlink oracle,
+    // that's going to respond in a 2nd transaction we are going to define below
+    // that function is the one going to creata a token ID and everything that we need
+    //keyhash verifies if the number is truly random, fee is how much token we are going to send to chainlink oracle
+    // when working with chainlink oracle, we are paying a bit of link
+    // we want to know the random number we requested is the same random number that associate with the request, when the chainlink node return, it's going to return and sign the random number to the correct call
     bytes32 requestId = requestRandomness(keyHash, fee);
+    // when I created the request, the address is associated with me
     requestIdToSender[requestId] = msg.sender;
     requestIdToTokenURI[requestId] = tokenURI;
+    // emit is purely for testing
+    // emit is closest to Ethereum logging
+    // we can't access event on-chain but we can read them from off-chain
+    // smart contract can't interact with events, but we can interact with event for testing
     emit requestCollectible(requestId);
   }
 
+  // once the chainlink node responses, we will want to fulfill randomness
+  // we kicked off a randomness request, the chainlink nodes responses by calling this fulfillRandomness function
   function fulfillRandomness(bytes32 requestId, uint256 randomNumber)
     internal
     override
   {
     address dogOwner = requestIdToSender[requestId];
     string memory tokenURI = requestIdToTokenURI[requestId];
+    // every time we mint a new collectible on our NFT factory contract, we have to give it a token ID, which is the tokenCounter, which keeps track of the number of NFT minted
     uint256 newItemId = tokenCounter;
     _safeMint(dogOwner, newItemId);
     _setTokenURI(newItemId, tokenURI);
     Breed breed = Breed(randomNumber % 3);
     tokenIdToBreed[newItemId] = breed;
     requestIdToTokenId[requestId] = newItemId;
-    tokenCounter++;
+    tokenCounter = tokenCounter + 1;
   }
 
+  // set the tokenID to the correct tokenURI
   function setTokenURI(uint256 tokenId, string memory _tokenURI) public {
     require(
+      // _isApprovedOrOwner() is imported from openzeppelin
       _isApprovedOrOwner(_msgSender(), tokenId),
       'ERC721: transfer call is not owner nor approved'
     );
-    _setTokenURL(tokenId, _tokenURI);
+    _setTokenURI(tokenId, _tokenURI);
   }
 }
