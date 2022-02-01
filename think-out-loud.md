@@ -52,3 +52,32 @@ Those function-like-interfaces in `LinkTokenInterface` hows us what we can do wi
 e.g. can approve, transfer
 need this to interace with chainlink token and transfer and fund our contract 
 
+# Deploying the contract onto Rinkeby Testnet
+on cli: `brownie run scripts/advanced_collectible/deploy_advanced.py --network rinkeby`
+- note the `--` flag part says to run the script with such parameter instead of the default
+- copy the address from "Transaction sent", paste it on Etherscan Rinkeby to see the transaction details
+- even the transaction status is "success" Etherscan, cli gives me this: "ValueError: Gas estimation failed: 'invalid opcode: INVALID'. This transaction will likely revert. If you wish to broadcast, you must set the gas limit manually."
+- not sure what it means at the moment, but it has something to do with the funding part
+- because the transaction that was successful was the successful deployment part, but the funding part failed because of gas problem, and I can see on Etherscan that the contract is not funded
+- Turned out because it is funding with "Link", and I didn't have any "Link" in my account. Followed the instruction from "update" part of the video, added a Link token account and request some test Link token from Chainlink.
+
+# summary up to this point:
+- A smart contract is deployed on the Rinkeby test net
+- The smart contract is funded with Link Token 
+
+# Next: interact with the deployed contract
+call the functions defined: createCollectible, fulfil it and create the actual collectible with the new tokenId, and then we also need to set the tokenURI, we need to store the data in some places like IPFS.
+
+The last successful deployment and funded contract:
+Transaction sent: 0x802b4bf5b52b7e6e415aac6a9638ef86dd2beada0944c1db265522b1a51cf87a
+  Gas price: 1.000000011 gwei   Gas limit: 2569673   Nonce: 14
+  AdvancedCollectible.constructor confirmed   Block: 10091755   Gas used: 2336067 (90.91%)
+  AdvancedCollectible deployed at: 0x8F4593C6E46AB1949BA4F771927aEE8eB1306ab5
+
+Transaction sent: 0x032c06c53ccb7d3e419b30e642f99c0904f2391d7bafd165af0b627d4b833afe
+  Gas price: 1.000000011 gwei   Gas limit: 56978   Nonce: 15
+  LinkTokenInterface.transfer confirmed   Block: 10091756   Gas used: 51799 (90.91%)
+
+- In `Build` --> `deployments`, there are four json files, the file names are the address of the deployment?
+- In the example above: AdvancedCollectible deployed at: 0x8F4593C6E46AB1949BA4F771927aEE8eB1306ab5, and there's one json file with the same address.
+
