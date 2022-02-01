@@ -81,3 +81,14 @@ Transaction sent: 0x032c06c53ccb7d3e419b30e642f99c0904f2391d7bafd165af0b627d4b83
 - In `Build` --> `deployments`, there are four json files, the file names are the address of the deployment?
 - In the example above: AdvancedCollectible deployed at: 0x8F4593C6E46AB1949BA4F771927aEE8eB1306ab5, and there's one json file with the same address.
 
+# `create_collectible.py` is to create the actual collectible by accessing the defined method in `AdvancedCollectible.sol`
+- the `switch` thing isn't actually a switch keyword but a dictionary
+
+# `create_metadata.py`
+- create the metadata representing each token
+
+# download IPFS command line tool
+- run IPFS, start a IPFS node on our machine
+
+Reason of using Pinata:
+If our IPFS node goes down, there is another node that has it up 
