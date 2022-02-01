@@ -46,12 +46,14 @@ contract AdvancedCollectible is ERC721, VRFConsumerBase {
     // get a random node from the offchain chainlink oracle,
     // that's going to respond in a 2nd transaction we are going to define below
     // that function is the one going to creata a token ID and everything that we need
-    //keyhash verifies if the number is truly random, fee is how much token we are going to send to chainlink oracle
+    // keyhash verifies if the number is truly random, fee is how much token we are going to send to chainlink oracle
     // when working with chainlink oracle, we are paying a bit of link
     // we want to know the random number we requested is the same random number that associate with the request, when the chainlink node return, it's going to return and sign the random number to the correct call
     bytes32 requestId = requestRandomness(keyHash, fee);
     // when I created the request, the address is associated with me
     requestIdToSender[requestId] = msg.sender;
+    // the requestId is associated with the metadata defined at the tokenURI
+    // in this example we are setting it to be blank for now.
     requestIdToTokenURI[requestId] = tokenURI;
     // emit is purely for testing
     // emit is closest to Ethereum logging
@@ -62,6 +64,7 @@ contract AdvancedCollectible is ERC721, VRFConsumerBase {
 
   // once the chainlink node responses, we will want to fulfill randomness
   // we kicked off a randomness request, the chainlink nodes responses by calling this fulfillRandomness function
+  // does the `randomNumber` here return from the request to Chainlink? Or what is it?
   function fulfillRandomness(bytes32 requestId, uint256 randomNumber)
     internal
     override
@@ -70,6 +73,7 @@ contract AdvancedCollectible is ERC721, VRFConsumerBase {
     string memory tokenURI = requestIdToTokenURI[requestId];
     // every time we mint a new collectible on our NFT factory contract, we have to give it a token ID, which is the tokenCounter, which keeps track of the number of NFT minted
     uint256 newItemId = tokenCounter;
+    // when minting a new token, needs to tell the function who init the minting - dogOwner, and the id of the newly minted token - tokenId
     _safeMint(dogOwner, newItemId);
     _setTokenURI(newItemId, tokenURI);
     Breed breed = Breed(randomNumber % 3);
@@ -79,6 +83,7 @@ contract AdvancedCollectible is ERC721, VRFConsumerBase {
   }
 
   // set the tokenID to the correct tokenURI
+  // since we don't know the breed of the dog before it's created, have to add the breed and metadata in the tokenURL later - after we know what breed it is
   function setTokenURI(uint256 tokenId, string memory _tokenURI) public {
     require(
       // _isApprovedOrOwner() is imported from openzeppelin

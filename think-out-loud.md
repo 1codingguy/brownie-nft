@@ -34,3 +34,21 @@ https://eips.ethereum.org/EIPS/eip-721
   - IPFS is basically a network in a decentralized manner
 
 # ganache-cli is to run test locally before deploying the smart contract onto blockchain
+
+add `dotenv: .env` to `brownie-config.yaml` otherwise python doesn't know where to get the variable of `from_key`
+
+`fund_advanced_collectible()` in `helpful_scripts.py`
+- To fund a contract, we need to specify an address to fund from this address
+- also need to send a link token 
+  - interface is helpful here 
+  - whenever interact with smart contract on-chain, we need two things:
+  1. the interface or the ABI
+    - the interface is a secret way to get ABI
+    - ABI defines a way to interact with those contracts
+  2. address 
+
+
+Those function-like-interfaces in `LinkTokenInterface` hows us what we can do with the link token.
+e.g. can approve, transfer
+need this to interace with chainlink token and transfer and fund our contract 
+
